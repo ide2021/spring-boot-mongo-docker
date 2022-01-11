@@ -39,7 +39,7 @@ spec:
     spec:
       containers:
       - name: portfolio
-        image: huguette/hug-httpd:hug-httpd
+        image: huguette/hug-httpd
         ports:
         - containerPort: 4000
         livenessProbe:
