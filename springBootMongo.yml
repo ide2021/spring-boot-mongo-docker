@@ -1,51 +1,37 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: frontend-service-stable
-spec:
-  type: LoadBalancer
-  selector:
-    app: myportfolio
-    type: frontend
-    track: stable
-  ports:
-  - protocol: TCP
-    port: 80
-    nodePort: 30008
-    targetPort: 4000
-
 ---
-  
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment  # name of the manifest 
 metadata:
-  name: portfolio-deployment-canary
-  labels:
-    app: myportfolio
-    type: frontend
+  name: huguette-dev # This is the name of the APP/pods 
+  namespace: monitoring 
 spec:
-  replicas: 2
   selector:
     matchLabels:
-      app: myportfolio
-      type: frontend
-      track: stable
+      app: huguette-dev # The name of APP/pods 
+  replicas: 1 # tells us the number of pods matching the template. In this case 1 pod/container/application
+  strategy:
+    type: RollingUpdate # bluegreen Canary deployement method 
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
   template:
     metadata:
       labels:
-        app: myportfolio
-        type: frontend
-        track: stable
+        app: huguette-dev
     spec:
       containers:
-      - name: portfolio
-        image: huguette/hug-httpd
+      - name: huguette-dev
+        image: nginx # This image will be given by the company 
+        imagePullPolicy: Always 
         ports:
-        - containerPort: 4000
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 4000
-          initialDelaySeconds: 15
-          timeoutSeconds: 1
-          periodSeconds: 10
+        - containerPort: 80 # This is the container port 
+---
+apiVersion: v1
+kind: Service # service manifest 
+metadata:
+  name: huguette-services # load balancer and also expose the pods to the user on internet
+  labels:
+    app: huguette-dev
+spec:
+  selector
