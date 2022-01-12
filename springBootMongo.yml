@@ -34,4 +34,11 @@ metadata:
   labels:
     app: huguette-dev
 spec:
-  selector
+  selector:
+    app: huguette-dev
+  type: LoadBalancer
+  ports:
+    - port: 80 # container port 
+      targetPort: 80 # same as container port 
+      nodePort: 31300 # the entrance door to the node where the pods are installed. The nodeport ranges from 30000 ro 32767
+
